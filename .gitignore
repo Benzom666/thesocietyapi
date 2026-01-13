@@ -30,3 +30,8 @@ logs/*
 
 package-lock.json
 .env
+# secrets
+.env
+.env*
+*.env
+.envbacup
