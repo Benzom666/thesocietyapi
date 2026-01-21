@@ -29,6 +29,39 @@ exports.getAllRequests = async(req, res) => {
 
     return res.status(200).json(helper.successResponse(requests, 201, 'Requests received.'));
 }
+exports.getSentRequests = async (req, res) => {
+    try {
+        const { email } = req.datajwt.userdata;
+        const { status } = req.query; // optional filter
+
+        const filter = { requester_id: email };
+        if (typeof status !== 'undefined') {
+            filter.status = Number(status);
+        }
+        const requests = await Requests.find(filter, { __v: 0 });
+        return res.status(200).json(helper.successResponse(requests, 200, 'Sent requests fetched.'));
+    } catch (err) {
+        console.error('getSentRequests error', err);
+        return res.status(500).json(helper.errorResponse({}, 500, 'Failed to fetch sent requests.'));
+    }
+}
+
+exports.getSentRequests = async(req, res) => {
+    const { email } = req.datajwt.userdata;
+    const { status } = req.query;
+    const filter = { requester_id: email };
+    if (typeof status !== 'undefined') {
+        const st = parseInt(status, 10);
+        if (!Number.isNaN(st)) filter.status = st;
+    }
+
+    const requests = await Requests.find(filter, { _id: 0, __v: 0 });
+    if(!requests.length) {
+        return res.status(200).json(helper.successResponse([], 200, 'No sent requests.'));
+    }
+    return res.status(200).json(helper.successResponse(requests, 201, 'Sent requests.'));
+}
+
 exports.sendRequest = async(req, res) => {
     const { message, receiver_id } = req.body;
     const { gender, email } = req.datajwt.userdata;

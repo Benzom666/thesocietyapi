@@ -7,6 +7,8 @@ const router = express.Router();
 
 /* get all requests */
 router.get('/', validateApi, requestController.getAllRequests);
+/* get requests sent by the logged-in male */
+router.get('/sent', validateApi, requestController.getSentRequests);
 
 
 /* Male request to Female only */
